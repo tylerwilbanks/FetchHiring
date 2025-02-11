@@ -22,7 +22,7 @@ class HomeRepository(
     private val defaultDispatcher: CoroutineDispatcher = FetchApplication.appModule.defaultDispatcher
 ) {
 
-    suspend fun fetchHiringItems() = flow<ContinuousOption<ImmutableList<HiringListItem>, GeneralIssue>> {
+    fun fetchHiringItems() = flow<ContinuousOption<ImmutableList<HiringListItem>, GeneralIssue>> {
         // if a database is implemented, here you could grab the items from the database to display
         // while fetching new items
         emit(ContinuousOption.Loading(persistentListOf(), ContinuousStatus.Indefinite()))
@@ -34,7 +34,21 @@ class HomeRepository(
                         textRes = TextRes.Raw(response.message)
                     )
                 )
-            is ApiResponse.Success -> ContinuousOption.Success(data = response.data.map(HiringDTO::toListItem).toImmutableList())
+            is ApiResponse.Success -> ContinuousOption.Success(
+                data = response
+                    .data
+                    .filterNot { it.name.isNullOrBlank() }
+                    .groupBy { it.listId }
+                    .flatMap { entry ->
+                        entry.value
+                            .sortedWith(
+                                compareBy(
+                                    { it.listId }, { it.name?.substringAfterLast(" ")?.toIntOrNull() ?: Int.MAX_VALUE }
+                                )
+                            ).map(HiringDTO::toListItem)
+                    }
+                    .toImmutableList()
+            )
         }
         emit(continuousOption)
     }.flowOn(defaultDispatcher)
