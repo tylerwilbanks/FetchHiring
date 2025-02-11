@@ -9,12 +9,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
+import com.minutesock.fetchhiring.feat.home.presentation.ui.HomeHost
 import com.minutesock.fetchhiring.ui.theme.FetchHiringTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,9 +22,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             FetchHiringTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    HomeScreen(
-                        modifier = Modifier.padding(innerPadding)
-                    )
+                    HomeHost(modifier = Modifier.padding(innerPadding))
                 }
             }
         }
